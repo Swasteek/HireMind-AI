@@ -2,18 +2,18 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
+// Auth
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+
+// Candidate
 import CandidateDashboard from './pages/candidate/DashboardPage';
 import UploadResumePage from './pages/candidate/UploadResumePage';
 
-// Recruiter dashboard placeholder — Day 3
-const RecruiterDashboard = () => (
-    <div className="min-h-screen bg-gray-50 p-8">
-        <h1 className="text-2xl font-bold text-gray-900">Recruiter Dashboard</h1>
-        <p className="text-gray-500 mt-2">Day 3: Job management and candidate ranking coming here.</p>
-    </div>
-);
+// Recruiter
+import RecruiterDashboard from './pages/recruiter/DashboardPage';
+import CandidatesPage from './pages/recruiter/CandidatesPage';
+import CandidateDetailPage from './pages/recruiter/CandidateDetailPage';
 
 function App() {
     return (
@@ -25,32 +25,23 @@ function App() {
                     <Route path="/register" element={<RegisterPage />} />
 
                     {/* Candidate */}
-                    <Route
-                        path="/candidate/dashboard"
-                        element={
-                            <ProtectedRoute requiredRole="candidate">
-                                <CandidateDashboard />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/candidate/upload"
-                        element={
-                            <ProtectedRoute requiredRole="candidate">
-                                <UploadResumePage />
-                            </ProtectedRoute>
-                        }
-                    />
+                    <Route path="/candidate/dashboard" element={
+                        <ProtectedRoute requiredRole="candidate"><CandidateDashboard /></ProtectedRoute>
+                    } />
+                    <Route path="/candidate/upload" element={
+                        <ProtectedRoute requiredRole="candidate"><UploadResumePage /></ProtectedRoute>
+                    } />
 
                     {/* Recruiter */}
-                    <Route
-                        path="/recruiter/dashboard"
-                        element={
-                            <ProtectedRoute requiredRole="recruiter">
-                                <RecruiterDashboard />
-                            </ProtectedRoute>
-                        }
-                    />
+                    <Route path="/recruiter/dashboard" element={
+                        <ProtectedRoute requiredRole="recruiter"><RecruiterDashboard /></ProtectedRoute>
+                    } />
+                    <Route path="/recruiter/jobs/:jobId/candidates" element={
+                        <ProtectedRoute requiredRole="recruiter"><CandidatesPage /></ProtectedRoute>
+                    } />
+                    <Route path="/recruiter/applications/:applicationId" element={
+                        <ProtectedRoute requiredRole="recruiter"><CandidateDetailPage /></ProtectedRoute>
+                    } />
 
                     <Route path="/" element={<Navigate to="/login" replace />} />
                 </Routes>
