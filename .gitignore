@@ -1,0 +1,16 @@
+# Ignore a specific file
+secrets.txt
+
+# Ignore a specific folder and all its contents (add trailing slash)
+node_modules/
+dist/
+build/
+
+# Ignore all files with a specific extension (e.g., logs or environment variables)
+*.log
+.env
+.env.local
+
+# Ignore OS-specific system files
+.DS_Store
+Thumbs.db
