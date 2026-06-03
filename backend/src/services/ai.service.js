@@ -109,4 +109,139 @@ Return ONLY a valid JSON object, no explanation, no markdown:
     }
 };
 
-module.exports = { parseResume, scoreResumeMatch };
+// ─── Generate Interview Questions ─────────────────────────────────────────────
+// Takes job context + candidate resume → returns 5 targeted questions.
+// Mix of technical and behavioral questions tailored to the specific role.
+const generateInterviewQuestions = async (jobTitle, jobDescription, requiredSkills, parsedResume) => {
+    const prompt = `
+You are a senior technical interviewer. Generate exactly 5 interview questions for a candidate
+applying for the role below. Mix technical and behavioral questions based on their background.
+
+Job Title: ${jobTitle}
+Job Description: ${jobDescription}
+Required Skills: ${requiredSkills}
+
+Candidate Profile:
+- Skills: ${parsedResume.skills?.join(', ')}
+- Experience: ${parsedResume.experience?.map(e => `${e.role} at ${e.company}`).join(', ')}
+- Education: ${parsedResume.education?.map(e => `${e.degree} from ${e.institution}`).join(', ')}
+
+Rules:
+- Questions 1-3: technical, specific to the required skills and candidate's background
+- Questions 4-5: behavioral, using STAR method situations relevant to this role
+- Each question should be specific, not generic
+- Do not ask questions the resume already answers
+
+Return ONLY a valid JSON array, no explanation, no markdown:
+[
+  {
+    "id": 1,
+    "type": "technical",
+    "question": "question text here"
+  },
+  {
+    "id": 2,
+    "type": "technical",
+    "question": "question text here"
+  },
+  {
+    "id": 3,
+    "type": "technical",
+    "question": "question text here"
+  },
+  {
+    "id": 4,
+    "type": "behavioral",
+    "question": "question text here"
+  },
+  {
+    "id": 5,
+    "type": "behavioral",
+    "question": "question text here"
+  }
+]
+`.trim();
+
+    const response = await groq.chat.completions.create({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.7, // Higher temperature = more varied, creative questions
+        max_tokens: 1500,
+    });
+
+    const content = response.choices[0].message.content.trim();
+
+    try {
+        return JSON.parse(content);
+    } catch {
+        const jsonMatch = content.match(/\[[\s\S]*\]/);
+        if (jsonMatch) return JSON.parse(jsonMatch[0]);
+        throw new Error('AI returned invalid JSON for question generation');
+    }
+};
+
+// ─── Evaluate Interview Answers ────────────────────────────────────────────────
+// Takes questions + candidate answers + job context.
+// Returns per-answer feedback, overall score, and hire recommendation.
+const evaluateAnswers = async (questions, answers, jobTitle, requiredSkills) => {
+    // Build a readable Q&A block to send to Groq
+    const qaBlock = questions.map((q) => {
+        const answer = answers.find((a) => a.questionId === q.id);
+        return `Q${q.id} [${q.type}]: ${q.question}\nAnswer: ${answer?.answer || '(no answer provided)'}`;
+    }).join('\n\n');
+
+    const prompt = `
+You are a senior technical interviewer evaluating a candidate's interview answers.
+
+Role: ${jobTitle}
+Required Skills: ${requiredSkills}
+
+Interview Questions and Answers:
+${qaBlock}
+
+Evaluate each answer and provide an overall assessment.
+
+Return ONLY a valid JSON object, no explanation, no markdown:
+{
+  "overall_score": <integer 0-100>,
+  "recommendation": "<one of: hire, maybe, reject>",
+  "recommendation_reason": "2-3 sentence summary of why you recommend this decision",
+  "per_answer_feedback": [
+    {
+      "question_id": 1,
+      "score": <integer 0-10>,
+      "feedback": "specific feedback on this answer — what was good and what was missing"
+    }
+  ],
+  "strengths": ["key strength observed across the interview"],
+  "areas_for_improvement": ["specific area the candidate should work on"],
+  "overall_feedback": "3-4 sentence comprehensive evaluation of the candidate"
+}
+
+Scoring guide:
+- 0-40: Poor answers, missing core concepts
+- 41-60: Basic understanding, needs improvement
+- 61-75: Good candidate, some gaps
+- 76-90: Strong candidate, recommend hire
+- 91-100: Exceptional, fast-track hire
+`.trim();
+
+    const response = await groq.chat.completions.create({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.2,
+        max_tokens: 2000,
+    });
+
+    const content = response.choices[0].message.content.trim();
+
+    try {
+        return JSON.parse(content);
+    } catch {
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        if (jsonMatch) return JSON.parse(jsonMatch[0]);
+        throw new Error('AI returned invalid JSON for answer evaluation');
+    }
+};
+
+module.exports = { parseResume, scoreResumeMatch, generateInterviewQuestions, evaluateAnswers };

@@ -1,16 +1,28 @@
-# Ignore a specific file
-secrets.txt
-
-# Ignore a specific folder and all its contents (add trailing slash)
+# Dependencies
 node_modules/
+.pnp
+.pnp.js
+
+# Environment variables — NEVER commit these
+.env
+.env.local
+.env.production
+
+# Build outputs
 dist/
 build/
 
-# Ignore all files with a specific extension (e.g., logs or environment variables)
+# Logs
 *.log
-.env
-.env.local
+npm-debug.log*
 
-# Ignore OS-specific system files
+# OS files
 .DS_Store
 Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Vite
+*.local

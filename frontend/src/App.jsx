@@ -9,11 +9,13 @@ import RegisterPage from './pages/RegisterPage';
 // Candidate
 import CandidateDashboard from './pages/candidate/DashboardPage';
 import UploadResumePage from './pages/candidate/UploadResumePage';
+import InterviewPage from './pages/candidate/InterviewPage';
 
 // Recruiter
 import RecruiterDashboard from './pages/recruiter/DashboardPage';
 import CandidatesPage from './pages/recruiter/CandidatesPage';
 import CandidateDetailPage from './pages/recruiter/CandidateDetailPage';
+import InterviewResultPage from './pages/recruiter/InterviewResultPage';
 
 function App() {
     return (
@@ -31,6 +33,9 @@ function App() {
                     <Route path="/candidate/upload" element={
                         <ProtectedRoute requiredRole="candidate"><UploadResumePage /></ProtectedRoute>
                     } />
+                    <Route path="/candidate/interviews" element={
+                        <ProtectedRoute requiredRole="candidate"><InterviewPage /></ProtectedRoute>
+                    } />
 
                     {/* Recruiter */}
                     <Route path="/recruiter/dashboard" element={
@@ -41,6 +46,9 @@ function App() {
                     } />
                     <Route path="/recruiter/applications/:applicationId" element={
                         <ProtectedRoute requiredRole="recruiter"><CandidateDetailPage /></ProtectedRoute>
+                    } />
+                    <Route path="/recruiter/interviews/:applicationId/result" element={
+                        <ProtectedRoute requiredRole="recruiter"><InterviewResultPage /></ProtectedRoute>
                     } />
 
                     <Route path="/" element={<Navigate to="/login" replace />} />
