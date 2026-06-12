@@ -2,7 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Auth
+// Public
+import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 
@@ -22,7 +23,8 @@ function App() {
         <AuthProvider>
             <BrowserRouter>
                 <Routes>
-                    {/* Public */}
+                    {/* Public — landing page is now the root */}
+                    <Route path="/" element={<LandingPage />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
 
@@ -51,7 +53,8 @@ function App() {
                         <ProtectedRoute requiredRole="recruiter"><InterviewResultPage /></ProtectedRoute>
                     } />
 
-                    <Route path="/" element={<Navigate to="/login" replace />} />
+                    {/* Catch-all */}
+                    <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </BrowserRouter>
         </AuthProvider>

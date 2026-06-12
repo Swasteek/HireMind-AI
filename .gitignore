@@ -21,7 +21,8 @@ npm-debug.log*
 Thumbs.db
 
 # IDE
-.vscode/
+.vsco
++   de/
 .idea/
 
 # Vite

@@ -23,8 +23,8 @@ const JobCard = ({ job, onClick, onToggle }) => (
             </div>
             <span
                 className={`ml-3 px-2.5 py-1 rounded-full text-xs font-medium ${job.is_active
-                        ? 'bg-green-50 text-green-700'
-                        : 'bg-gray-100 text-gray-500'
+                    ? 'bg-green-50 text-green-700'
+                    : 'bg-gray-100 text-gray-500'
                     }`}
             >
                 {job.is_active ? 'Active' : 'Closed'}
@@ -196,6 +196,7 @@ const RecruiterDashboard = () => {
     const activeJobs = jobs.filter(j => j.is_active).length;
 
     return (
+
         <div className="min-h-screen bg-gray-50">
             {/* Navbar */}
             <nav className="bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between">
