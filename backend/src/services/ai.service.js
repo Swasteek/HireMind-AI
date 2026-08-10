@@ -8,7 +8,7 @@ const groq = require('../config/groq');
 // Takes raw text extracted from a PDF resume.
 // Returns structured JSON: skills, experience, education, summary.
 const parseResume = async (resumeText) => {
-    const prompt = `
+  const prompt = `
 You are an expert resume parser. Extract structured information from the resume text below.
 
 Return ONLY a valid JSON object with this exact structure — no explanation, no markdown, no code blocks:
@@ -39,34 +39,34 @@ Resume text:
 ${resumeText}
 `.trim();
 
-    const response = await groq.chat.completions.create({
-        model: 'llama-3.3-70b-versatile',
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.1, // Low temperature = consistent, structured output
-        max_tokens: 2000,
-    });
+  const response = await groq.chat.completions.create({
+    model: 'openai/gpt-oss-120b',
+    messages: [{ role: 'user', content: prompt }],
+    temperature: 0.1, // Low temperature = consistent, structured output
+    max_tokens: 2000,
+  });
 
-    const content = response.choices[0].message.content.trim();
+  const content = response.choices[0].message.content.trim();
 
-    // Parse the JSON response from Groq
-    // WHY try/catch? AI can sometimes return slightly malformed JSON
-    try {
-        return JSON.parse(content);
-    } catch {
-        // Try to extract JSON if there's any extra text around it
-        const jsonMatch = content.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-            return JSON.parse(jsonMatch[0]);
-        }
-        throw new Error('AI returned invalid JSON for resume parsing');
+  // Parse the JSON response from Groq
+  // WHY try/catch? AI can sometimes return slightly malformed JSON
+  try {
+    return JSON.parse(content);
+  } catch {
+    // Try to extract JSON if there's any extra text around it
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[0]);
     }
+    throw new Error('AI returned invalid JSON for resume parsing');
+  }
 };
 
 // ─── Resume vs Job Match Scoring ──────────────────────────────────────────────
 // Compares parsed resume against job description.
 // Returns a score 0-100 and reasoning.
 const scoreResumeMatch = async (parsedResume, jobDescription, requiredSkills) => {
-    const prompt = `
+  const prompt = `
 You are a technical recruiter evaluating a candidate's resume against a job description.
 
 Job Title and Description:
@@ -91,29 +91,29 @@ Return ONLY a valid JSON object, no explanation, no markdown:
 }
 `.trim();
 
-    const response = await groq.chat.completions.create({
-        model: 'llama-3.3-70b-versatile',
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.1,
-        max_tokens: 1000,
-    });
+  const response = await groq.chat.completions.create({
+    model: 'openai/gpt-oss-120b',
+    messages: [{ role: 'user', content: prompt }],
+    temperature: 0.1,
+    max_tokens: 1000,
+  });
 
-    const content = response.choices[0].message.content.trim();
+  const content = response.choices[0].message.content.trim();
 
-    try {
-        return JSON.parse(content);
-    } catch {
-        const jsonMatch = content.match(/\{[\s\S]*\}/);
-        if (jsonMatch) return JSON.parse(jsonMatch[0]);
-        throw new Error('AI returned invalid JSON for match scoring');
-    }
+  try {
+    return JSON.parse(content);
+  } catch {
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    if (jsonMatch) return JSON.parse(jsonMatch[0]);
+    throw new Error('AI returned invalid JSON for match scoring');
+  }
 };
 
 // ─── Generate Interview Questions ─────────────────────────────────────────────
 // Takes job context + candidate resume → returns 5 targeted questions.
 // Mix of technical and behavioral questions tailored to the specific role.
 const generateInterviewQuestions = async (jobTitle, jobDescription, requiredSkills, parsedResume) => {
-    const prompt = `
+  const prompt = `
 You are a senior technical interviewer. Generate exactly 5 interview questions for a candidate
 applying for the role below. Mix technical and behavioral questions based on their background.
 
@@ -162,35 +162,35 @@ Return ONLY a valid JSON array, no explanation, no markdown:
 ]
 `.trim();
 
-    const response = await groq.chat.completions.create({
-        model: 'llama-3.3-70b-versatile',
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.7, // Higher temperature = more varied, creative questions
-        max_tokens: 1500,
-    });
+  const response = await groq.chat.completions.create({
+    model: 'openai/gpt-oss-120b',
+    messages: [{ role: 'user', content: prompt }],
+    temperature: 0.7, // Higher temperature = more varied, creative questions
+    max_tokens: 1500,
+  });
 
-    const content = response.choices[0].message.content.trim();
+  const content = response.choices[0].message.content.trim();
 
-    try {
-        return JSON.parse(content);
-    } catch {
-        const jsonMatch = content.match(/\[[\s\S]*\]/);
-        if (jsonMatch) return JSON.parse(jsonMatch[0]);
-        throw new Error('AI returned invalid JSON for question generation');
-    }
+  try {
+    return JSON.parse(content);
+  } catch {
+    const jsonMatch = content.match(/\[[\s\S]*\]/);
+    if (jsonMatch) return JSON.parse(jsonMatch[0]);
+    throw new Error('AI returned invalid JSON for question generation');
+  }
 };
 
 // ─── Evaluate Interview Answers ────────────────────────────────────────────────
 // Takes questions + candidate answers + job context.
 // Returns per-answer feedback, overall score, and hire recommendation.
 const evaluateAnswers = async (questions, answers, jobTitle, requiredSkills) => {
-    // Build a readable Q&A block to send to Groq
-    const qaBlock = questions.map((q) => {
-        const answer = answers.find((a) => a.questionId === q.id);
-        return `Q${q.id} [${q.type}]: ${q.question}\nAnswer: ${answer?.answer || '(no answer provided)'}`;
-    }).join('\n\n');
+  // Build a readable Q&A block to send to Groq
+  const qaBlock = questions.map((q) => {
+    const answer = answers.find((a) => a.questionId === q.id);
+    return `Q${q.id} [${q.type}]: ${q.question}\nAnswer: ${answer?.answer || '(no answer provided)'}`;
+  }).join('\n\n');
 
-    const prompt = `
+  const prompt = `
 You are a senior technical interviewer evaluating a candidate's interview answers.
 
 Role: ${jobTitle}
@@ -226,22 +226,22 @@ Scoring guide:
 - 91-100: Exceptional, fast-track hire
 `.trim();
 
-    const response = await groq.chat.completions.create({
-        model: 'llama-3.3-70b-versatile',
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.2,
-        max_tokens: 2000,
-    });
+  const response = await groq.chat.completions.create({
+    model: 'openai/gpt-oss-120b',
+    messages: [{ role: 'user', content: prompt }],
+    temperature: 0.2,
+    max_tokens: 2000,
+  });
 
-    const content = response.choices[0].message.content.trim();
+  const content = response.choices[0].message.content.trim();
 
-    try {
-        return JSON.parse(content);
-    } catch {
-        const jsonMatch = content.match(/\{[\s\S]*\}/);
-        if (jsonMatch) return JSON.parse(jsonMatch[0]);
-        throw new Error('AI returned invalid JSON for answer evaluation');
-    }
+  try {
+    return JSON.parse(content);
+  } catch {
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    if (jsonMatch) return JSON.parse(jsonMatch[0]);
+    throw new Error('AI returned invalid JSON for answer evaluation');
+  }
 };
 
 module.exports = { parseResume, scoreResumeMatch, generateInterviewQuestions, evaluateAnswers };

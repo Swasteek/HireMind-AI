@@ -46,7 +46,7 @@ const LandingPage = () => {
             {/* Hero */}
             <section className="max-w-5xl mx-auto px-6 py-20 text-center">
                 <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-full px-4 py-1.5 mb-6">
-                    <span className="text-blue-600 text-xs font-semibold">Powered by Groq + Llama 3.3-70b</span>
+                    <span className="text-blue-600 text-xs font-semibold">Powered by Groq + GPT OSS 120B</span>
                 </div>
                 <h1 className="text-5xl font-bold text-gray-900 leading-tight mb-6">
                     Hire smarter with{' '}
