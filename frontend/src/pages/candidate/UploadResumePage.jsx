@@ -83,6 +83,7 @@ const UploadResumePage = () => {
             <p className="text-gray-500 text-sm mb-8">Upload your resume and our AI will parse it and score your match.</p>
 
             {/* Step 1: Select Job */}
+            {/* Step 1: Select Job */}
             <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                     1. Select a job to apply for
@@ -95,10 +96,38 @@ const UploadResumePage = () => {
                     <option value="">— Choose a job —</option>
                     {jobs.map((job) => (
                         <option key={job.id} value={job.id}>
-                            {job.job_title || job.title}
+                            {job.title}
                         </option>
                     ))}
                 </select>
+
+                {/* Job detail panel — shows when a job is selected */}
+                {selectedJob && (() => {
+                    const job = jobs.find(j => j.id === selectedJob);
+                    if (!job) return null;
+                    return (
+                        <div className="mt-3 p-4 bg-blue-50 border border-blue-100 rounded-xl">
+                            <h3 className="font-semibold text-gray-900 text-sm mb-1">{job.title}</h3>
+                            <p className="text-gray-600 text-sm leading-relaxed mb-3">{job.description}</p>
+                            <div>
+                                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+                                    Required Skills
+                                </p>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {job.required_skills.split(',').map((skill) => (
+                                        <span
+                                            key={skill.trim()}
+                                            className="text-xs bg-white border border-blue-200 text-blue-700 px-2.5 py-1 rounded-md font-medium"
+                                        >
+                                            {skill.trim()}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })()}
+
                 {jobs.length === 0 && (
                     <p className="text-xs text-amber-600 mt-1">No jobs available yet. A recruiter needs to post one first.</p>
                 )}
