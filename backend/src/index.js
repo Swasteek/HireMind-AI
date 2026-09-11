@@ -1,5 +1,4 @@
 require('dotenv').config();
-
 const express = require('express');
 const cors = require('cors');
 const errorHandler = require('./middleware/errorHandler.middleware');
@@ -8,12 +7,20 @@ const authRoutes = require('./routes/auth.routes');
 const jobRoutes = require('./routes/job.routes');
 const resumeRoutes = require('./routes/resume.routes');
 const interviewRoutes = require('./routes/interview.routes');
+const dashboardRoutes = require('./routes/dashboard.routes');
 
 const app = express();
 
 // ─── Middleware ────────────────────────────────────────────────────────────────
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: (origin, callback) => {
+        const allowed = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, '');
+        if (!origin || origin === allowed) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
 }));
 app.use(express.json());
@@ -23,6 +30,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/jobs', jobRoutes);
 app.use('/api/v1/resumes', resumeRoutes);
 app.use('/api/v1/interviews', interviewRoutes);
+app.use('/api/v1/dashboard', dashboardRoutes);
 
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
@@ -35,7 +43,6 @@ app.get('/api/health', (req, res) => {
 });
 
 // ─── 404 handler ──────────────────────────────────────────────────────────────
-// Any route not matched above hits this
 app.use((req, res) => {
     res.status(404).json({
         success: false,
@@ -44,7 +51,6 @@ app.use((req, res) => {
 });
 
 // ─── Global error handler ─────────────────────────────────────────────────────
-// Must be last — Express identifies error handlers by 4 parameters (err, req, res, next)
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;

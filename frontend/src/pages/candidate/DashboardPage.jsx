@@ -61,6 +61,9 @@ const CandidateDashboard = () => {
                     >
                         Interviews
                     </Link>
+                    <Link to="/candidate/scores" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                        My Scores
+                    </Link>
 
                     <span className="text-sm text-gray-500">Hi, {user?.name}</span>
                     <button

@@ -11,19 +11,21 @@ import RegisterPage from './pages/RegisterPage';
 import CandidateDashboard from './pages/candidate/DashboardPage';
 import UploadResumePage from './pages/candidate/UploadResumePage';
 import InterviewPage from './pages/candidate/InterviewPage';
+import ScoreCardPage from './pages/candidate/ScoreCard';
 
 // Recruiter
 import RecruiterDashboard from './pages/recruiter/DashboardPage';
 import CandidatesPage from './pages/recruiter/CandidatesPage';
 import CandidateDetailPage from './pages/recruiter/CandidateDetailPage';
 import InterviewResultPage from './pages/recruiter/InterviewResultPage';
+import ScoringDashboard from './pages/recruiter/ScoringDashboard';
 
 function App() {
     return (
         <AuthProvider>
             <BrowserRouter>
                 <Routes>
-                    {/* Public — landing page is now the root */}
+                    {/* Public */}
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
@@ -38,10 +40,16 @@ function App() {
                     <Route path="/candidate/interviews" element={
                         <ProtectedRoute requiredRole="candidate"><InterviewPage /></ProtectedRoute>
                     } />
+                    <Route path="/candidate/scores" element={
+                        <ProtectedRoute requiredRole="candidate"><ScoreCardPage /></ProtectedRoute>
+                    } />
 
                     {/* Recruiter */}
                     <Route path="/recruiter/dashboard" element={
                         <ProtectedRoute requiredRole="recruiter"><RecruiterDashboard /></ProtectedRoute>
+                    } />
+                    <Route path="/recruiter/scoring" element={
+                        <ProtectedRoute requiredRole="recruiter"><ScoringDashboard /></ProtectedRoute>
                     } />
                     <Route path="/recruiter/jobs/:jobId/candidates" element={
                         <ProtectedRoute requiredRole="recruiter"><CandidatesPage /></ProtectedRoute>
@@ -53,7 +61,6 @@ function App() {
                         <ProtectedRoute requiredRole="recruiter"><InterviewResultPage /></ProtectedRoute>
                     } />
 
-                    {/* Catch-all */}
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </BrowserRouter>
