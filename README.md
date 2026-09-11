@@ -33,7 +33,7 @@ An AI-powered hiring platform that automates resume parsing, candidate scoring, 
 | Database | PostgreSQL via Supabase |
 | Auth | JWT + bcrypt |
 | Storage | Supabase Storage (PDF resumes) |
-| AI | Groq API — llama-3.3-70b-versatile |
+| AI | Groq API — openai-GPT-OSS-120b |
 | Deployment | Render (backend), Vercel (frontend) |
 
 ---
