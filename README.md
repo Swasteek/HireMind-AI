@@ -1,6 +1,6 @@
 # HireMind AI
 
-An AI-powered hiring platform that automates resume parsing, candidate scoring, interview generation, and hiring recommendations using Groq's Llama 3.3-70b model.
+An AI-powered hiring platform that automates resume parsing, candidate scoring, interview generation, and hiring recommendations using Groq's openai-GPT-OSS-120b.
 
 **Live Demo:** [hire-mind-ai-kappa.vercel.app](https://hire-mind-ai-kappa.vercel.app)
 
