@@ -234,5 +234,3 @@ curl http://localhost:3000/api/health
 **Why 40/60 weighting for combined score?** Interview performance (demonstrated ability) is weighted higher than resume (documented history) because it's a better signal of actual capability.
 
 ---
-
-Built in 7 days as an MVP. Stack: React · Node.js · PostgreSQL · Groq AI
